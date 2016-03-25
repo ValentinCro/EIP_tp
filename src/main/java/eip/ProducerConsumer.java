@@ -6,6 +6,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.impl.DefaultCamelContext;
 import org.apache.log4j.BasicConfigurator;
 
+import java.util.Scanner;
+
 public class ProducerConsumer {
     public static void main (String [] args) throws Exception {
         //Configure le logger par défaut
@@ -32,7 +34,16 @@ public class ProducerConsumer {
 
         //On créé un producteur
         ProducerTemplate pt = context.createProducerTemplate();
-        //qui envoie un message au consommateur 'consumer-1'
-        pt.sendBody("direct:consumer-1", "Hello world Buddy !");
+
+        String userEntry = "";
+
+        do {
+            Scanner sc = new Scanner(System.in);
+            userEntry = sc.nextLine();
+            if (!userEntry.equals("")) {
+                //qui envoie un message au consommateur 'consumer-1'
+                pt.sendBody("direct:consumer-1", userEntry);
+            }
+        } while (!userEntry.equals("exit"));
     }
 }
