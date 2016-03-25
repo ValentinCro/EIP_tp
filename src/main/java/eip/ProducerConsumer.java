@@ -25,7 +25,7 @@ public class ProducerConsumer {
             public void configure() throws Exception {
                 //On définit un consommateur 'consumer-1'
                 //qui va écrire le message
-                from("direct:consumer-1").to("log:afficher-1-log");
+                /*from("direct:consumer-1").to("log:afficher-1-log");
                 from("direct:consumer-2").to("file:messages");
                 from("direct:consumer-all")
                         .choice()
@@ -36,7 +36,12 @@ public class ProducerConsumer {
                 from("direct:CityManager")
                         .setHeader(Exchange.HTTP_METHOD, constant("GET"))
                         .toD(url + "/${header.method}")
+                        .log("reponse received OMG : ${body}");*/
+                from("direct:GeoNames")
+                        .setHeader(Exchange.HTTP_METHOD, constant("GET"))
+                        .toD("http://api.geonames.org/search?name_equals=${header.method}&username=m1gil")
                         .log("reponse received OMG : ${body}");
+
             }
         };
 
@@ -56,7 +61,7 @@ public class ProducerConsumer {
             userEntry = sc.nextLine();
             if (!userEntry.equals("")) {
                 //qui envoie un message au consommateur 'consumer-1'
-                pt.sendBodyAndHeader("direct:CityManager", "", "method", userEntry);
+                pt.sendBodyAndHeader("direct:GeoNames", "", "method", userEntry);
             }
         } while (!userEntry.equals("exit"));
     }
