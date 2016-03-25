@@ -23,6 +23,13 @@ public class ProducerConsumer {
                 //On définit un consommateur 'consumer-1'
                 //qui va écrire le message
                 from("direct:consumer-1").to("log:afficher-1-log");
+                from("direct:consumer-2").to("file:messages");
+                from("direct:consumer-all")
+                        .choice()
+                            .when(header("destinataire").isEqualTo("écrire"))
+                                .to("direct:consumer-2")
+                            .otherwise()
+                                .to("direct:consumer-1");
             }
         };
 
@@ -42,7 +49,11 @@ public class ProducerConsumer {
             userEntry = sc.nextLine();
             if (!userEntry.equals("")) {
                 //qui envoie un message au consommateur 'consumer-1'
-                pt.sendBody("direct:consumer-1", userEntry);
+                String header = "";
+                if (userEntry.charAt(0) == 'w') {
+                    header = "écrire";
+                }
+                pt.sendBodyAndHeader("direct:consumer-all", userEntry, "destinataire", header);
             }
         } while (!userEntry.equals("exit"));
     }
